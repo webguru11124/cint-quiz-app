@@ -18,6 +18,7 @@ interface Props {
   onSubmit: () => Promise<void>;
   onPrev: () => void;
   onQuestionSelect: (index: number) => void;
+  duration: number;
 }
 
 const QuestionComponent: React.FC<Props> = ({
@@ -32,6 +33,7 @@ const QuestionComponent: React.FC<Props> = ({
   onNext,
   onPrev,
   onQuestionSelect,
+  duration,
 }) => {
   const [error, setError] = useState<string | null>(null);
 

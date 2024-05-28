@@ -23,18 +23,21 @@ const useQuiz = () => {
         const randomizedQuestions = shuffleArray(data.results);
         setQuestions(randomizedQuestions);
         setSelectedAnswers(new Array(randomizedQuestions.length).fill(null));
+        const storedAnswers = localStorage.getItem("selectedAnswers");
+        if (storedAnswers) {
+          setShowConfirmation(true);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     loadQuestions();
-    const storedAnswers = localStorage.getItem("selectedAnswers");
-    if (storedAnswers) {
-      setShowConfirmation(true);
-    } else {
-    }
   }, []);
+  const handleTimeUp = () => {
+    setShowSummary(true);
+    submitResult();
+  };
 
   const loadStoredAnswers = () => {
     const storedQuizData = localStorage.getItem("quizData");
@@ -140,6 +143,7 @@ const useQuiz = () => {
     handleRestart,
     showConfirmation,
     setShowConfirmation,
+    handleTimeUp,
     loadStoredAnswers,
   };
 };

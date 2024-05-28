@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import QuestionComponent from "./components/QuestionComponent";
 import SummaryComponent from "./components/SummaryComponent";
 import useQuiz from "./hooks/useQuiz";
+import { QUIZ_DURATION } from "./constants/quiz";
+import Timer from "./components/primitive/timer/Timer";
 
 const App: React.FC = () => {
   const {
@@ -20,6 +22,7 @@ const App: React.FC = () => {
     handleAnswer,
     setCurrentQuestionIndex,
     handleRestart,
+    handleTimeUp,
   } = useQuiz();
 
   const handleQuestionSelect = (index: number) => {
@@ -58,7 +61,7 @@ const App: React.FC = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="App p-4 bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div className="App p-4 bg-gray-100 h-screen flex flex-col items-center justify-start">
       {questions.length > 0 && (
         <button
           className="mb-4 p-2 bg-blue-500 text-white rounded"
@@ -67,6 +70,8 @@ const App: React.FC = () => {
           {showStatusBar ? "Hide Status Bar" : "Show Status Bar"}
         </button>
       )}
+      <Timer duration={QUIZ_DURATION} onTimeUp={handleTimeUp} />
+
       {showSummary ? (
         <SummaryComponent
           correctAnswers={correctAnswers}
@@ -85,6 +90,7 @@ const App: React.FC = () => {
           selectedAnswers={selectedAnswers}
           selectedAnswer={selectedAnswers[currentQuestionIndex]}
           key={currentQuestionIndex}
+          duration={QUIZ_DURATION}
           onPrev={handlePrev}
           onSubmit={submitResult}
           onQuestionSelect={handleQuestionSelect}
