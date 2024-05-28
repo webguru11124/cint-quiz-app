@@ -1,207 +1,162 @@
-# Cint Quiz App
+# Quiz App
 
-This is a quiz application built using React (with TypeScript) for the frontend and Express (with TypeScript) for the backend. The application serves quiz questions from a JSON file and displays them in a user-friendly interface.
+![Demo](./demo.gif)
 
-## Project Structure
+This is a quiz application built with React and TypeScript. The application fetches quiz questions from an API, allows users to answer the questions, and provides a summary of correct and incorrect answers. The application also includes a timer that counts down and submits the quiz when the time is up.
 
-```
+## Features
 
-cint-quiz-app/
-├── backend/
-│ ├── src/
-│ │ ├── data.json
-│ │ └── server.ts
-│ ├── tsconfig.json
-│ └── package.json
-├── frontend/
-│ ├── src/
-│ │ ├── components/
-│ │ │ ├── QuestionComponent.tsx
-│ │ │ ├── MultipleChoiceQuestion.tsx
-│ │ │ ├── BooleanQuestion.tsx
-│ │ │ ├── TextQuestion.tsx
-│ │ │ ├── SummaryComponent.tsx
-│ │ ├── hooks/
-│ │ │ └── useQuiz.ts
-│ │ ├── App.tsx
-│ │ ├── index.tsx
-│ │ ├── styles/
-│ │ │ └── tailwind.css
-│ ├── tsconfig.json
-│ ├── package.json
-│ ├── postcss.config.js
-│ ├── tailwind.config.js
-│ └── public/
-├── package.json
-└── README.md
+- Fetches quiz questions from an API
+- Displays questions in a randomized order
+- Saves user answers and the current state in `localStorage`
+- Allows users to resume from their previous state
+- Displays a timer and submits the quiz when time is up
+- Provides a summary of correct and incorrect answers
 
-```
-
-## Installation
+## Setup
 
 ### Prerequisites
 
 - Node.js
 - npm
 
-### Steps
+### Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/cint-quiz-app.git
-   cd cint-quiz-app
+   git clone https://github.com/yourusername/quiz-app.git
+   cd quiz-app
    ```
 
-2. Install root dependencies:
+2. Install dependencies for both frontend and backend:
 
    ```bash
    npm install
+   cd frontend
+   npm install
+   cd ../backend
+   npm install
    ```
 
-3. Install backend dependencies:
+3. Start the backend server:
 
    ```bash
    cd backend
-   npm install
-   cd ..
+   npm start
    ```
 
-4. Install frontend dependencies:
+4. Start the frontend development server:
 
    ```bash
    cd frontend
-   npm install
-   cd ..
+   npm start
    ```
 
-## Running the Application
+5. The application should now be running on `http://localhost:3000`.
 
-To start both the backend and frontend servers concurrently, run the following command from the root directory:
+## Project Structure
 
-```bash
-npm start
+```plaintext
+quiz-app/
+├── backend/
+│   ├── src/
+│   │   ├── data.json
+│   │   └── server.ts
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── index.ts
+│   │   ├── components/
+│   │   │   ├── AlertBar.tsx
+│   │   │   ├── App.tsx
+│   │   │   ├── QuestionComponent.tsx
+│   │   │   ├── StatusBar.tsx
+│   │   │   └── Timer.tsx
+│   │   ├── hooks/
+│   │   │   └── useQuiz.ts
+│   │   ├── types/
+│   │   │   └── index.ts
+│   │   ├── App.css
+│   │   └── index.tsx
+│   ├── package.json
+│   └── tsconfig.json
+├── package.json
+└── README.md
 ```
 
-### Backend
+## Components
 
-The backend server will be running at [http://localhost:3001](http://localhost:3001). It serves the quiz questions from the `data.json` file.
+### Timer
 
-### Frontend
+A countdown timer that displays the remaining time in the format `minutes min seconds s` and submits the quiz when time is up.
 
-The frontend development server will be running at [http://localhost:3000](http://localhost:3000). It fetches quiz questions from the backend and displays them to the user.
+**Props:**
 
-## Project Details
+- `duration: number` - The total duration of the quiz in seconds.
+- `onTimeUp: () => void` - Callback function to be called when the time is up.
 
-### Backend
+### QuestionComponent
 
-- **Language**: TypeScript
-- **Framework**: Express
-- **Dependencies**: cors, express, ts-node, typescript, nodemon
+Handles the display of a single quiz question and allows users to navigate between questions.
 
-**backend/src/server.ts**
+**Props:**
 
-```typescript
-import express from "express";
-import cors from "cors";
-import data from "./data.json";
+- `question: Question` - The current question object.
+- `currentQuestionIndex: number` - The index of the current question.
+- `totalQuestions: number` - The total number of questions.
+- `selectedAnswer: string | null` - The currently selected answer for the question.
+- `selectedAnswers: (string | null)[]` - The array of selected answers.
+- `showStatusBar: boolean` - Flag to show or hide the status bar.
+- `onAnswer: (answer: string) => void` - Callback to handle when an answer is selected.
+- `onNext: () => void` - Callback to navigate to the next question.
+- `onPrev: () => void` - Callback to navigate to the previous question.
+- `onQuestionSelect: (index: number) => void` - Callback to select a specific question.
+- `onSubmit: () => Promise<void>` - Callback to handle answer submission.
+- `onTimeUp: () => void` - Callback to handle when the time is up.
+- `duration: number` - The total duration of the quiz in seconds.
 
-const app = express();
-const port = 3001;
+### useQuiz Hook
 
-app.use(cors());
+Custom hook to manage the state and logic of the quiz.
 
-app.get("/api/questions", (req, res) => {
-  res.json(data);
-});
+**State:**
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
-```
+- `questions: Question[]` - Array of questions.
+- `currentQuestionIndex: number` - Index of the current question.
+- `correctAnswers: number` - Count of correct answers.
+- `incorrectAnswers: number` - Count of incorrect answers.
+- `selectedAnswers: (string | null)[]` - Array of selected answers.
+- `showSummary: boolean` - Flag to show or hide the summary.
+- `showConfirmation: boolean` - Flag to show or hide the confirmation dialog.
 
-### Frontend
+**Functions:**
 
-- **Language**: TypeScript
-- **Framework**: React
-- **Dependencies**: @testing-library/jest-dom, @testing-library/react, @testing-library/user-event, react, react-dom, react-scripts, typescript, web-vitals
-- **DevDependencies**: tailwindcss, postcss, autoprefixer
+- `handleAnswer: (answer: string) => Promise<void>` - Handles selecting an answer.
+- `handleNext: () => void` - Navigates to the next question.
+- `handlePrev: () => void` - Navigates to the previous question.
+- `handleRestart: () => void` - Restarts the quiz.
+- `loadStoredAnswers: () => void` - Loads stored answers from `localStorage`.
+- `submitResult: () => Promise<void>` - Submits the quiz result.
+- `handleTimeUp: () => void` - Handles when the time is up.
 
-**frontend/src/hooks/useQuiz.ts**
+## API
 
-```typescript
-import { useState, useEffect } from "react";
-import { Question } from "../types";
+### `fetchQuestions`
 
-const useQuiz = () => {
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [correctAnswers, setCorrectAnswers] = useState<number>(0);
-  const [incorrectAnswers, setIncorrectAnswers] = useState<number>(0);
-  const [showSummary, setShowSummary] = useState<boolean>(false);
+Fetches the quiz questions from the backend API.
 
-  useEffect(() => {
-    fetch("http://localhost:3001/api/questions")
-      .then((response) => response.json())
-      .then((data) => setQuestions(data.results))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+### `submitSummary`
 
-  const handleAnswer = (answer: string) => {
-    const currentQuestion = questions[currentQuestionIndex];
-    if (answer === currentQuestion.correct_answer) {
-      setCorrectAnswers(correctAnswers + 1);
-    } else {
-      setIncorrectAnswers(incorrectAnswers + 1);
-    }
+Submits the quiz summary to the backend API.
 
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      setShowSummary(true);
-    }
-  };
+## Backend
 
-  const handleRestart = () => {
-    setCurrentQuestionIndex(0);
-    setCorrectAnswers(0);
-    setIncorrectAnswers(0);
-    setShowSummary(false);
-  };
+The backend is a simple Express server that serves the quiz questions and handles the submission of quiz results.
 
-  return {
-    questions,
-    currentQuestionIndex,
-    correctAnswers,
-    incorrectAnswers,
-    showSummary,
-    handleAnswer,
-    handleRestart,
-  };
-};
+### Endpoints
 
-export default useQuiz;
-```
-
-## Building for Production
-
-To create a production build of the frontend, run the following command:
-
-```bash
-npm run build:frontend
-```
-
-To build the backend, run the following command:
-
-```bash
-npm run build:backend
-```
-
-## License
-
-This project is licensed under the MIT License.
-
-```
-
-This `README.md` file includes information on the project structure, installation steps, running the application, and project details for both the backend and frontend. Adjust the details as necessary for your specific project. If you have any further questions or need more assistance, feel free to ask!
-```
+- `GET /api/questions` - Returns the quiz questions.
+- `POST /api/submit-summary` - Accepts the quiz summary.
